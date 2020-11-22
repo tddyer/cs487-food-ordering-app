@@ -1,10 +1,14 @@
 package com.example.orderquik;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -16,6 +20,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
 
     private List<Item> menuItems = new ArrayList<>();
+    private List<Item> itemsInCart = new ArrayList<>();
     private RecyclerView menuRecycler;
     private ItemsAdapter itemsAdapter;
 
@@ -103,9 +108,8 @@ public class MainActivity extends AppCompatActivity
     // From OnClickListener
     @Override
     public void onClick(View v) {  // click listener called by ViewHolder clicks
-//        int pos = recyclerView.getChildLayoutPosition(v);
-//        Note n = notesList.get(pos);
-//        launchExistingEditActivity(n, pos);
+        int pos = menuRecycler.getChildLayoutPosition(v);
+        itemsInCart.add(menuItems.get(pos));
     }
 
     // From OnLongClickListener
@@ -113,5 +117,59 @@ public class MainActivity extends AppCompatActivity
     public boolean onLongClick(View v) {  // long click listener called by ViewHolder long clicks
 //        int pos = recyclerView.getChildLayoutPosition(v);
         return true;
+    }
+
+    // options menu
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menuCart:
+                viewCart();
+                return true;
+            case R.id.menuProfile:
+                // TODO: view profile here
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    // alert dialogs
+
+    public void viewCart() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        final CharSequence[] itemNames = new CharSequence[itemsInCart.size()];
+        for (int i = 0; i < itemsInCart.size(); i++)
+            itemNames[i] = itemsInCart.get(i).getName();
+
+        builder.setPositiveButton("Checkout", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // TODO: navigate to checkout activity here
+            }
+        });
+        builder.setNegativeButton("Continue Shopping", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // do nothing
+            }
+        });
+
+        builder.setTitle("Your Order");
+        builder.setItems(itemNames, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO: remove items here
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
