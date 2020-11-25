@@ -1,11 +1,14 @@
 package com.example.orderquik;
 
-public class Item {
+import java.io.Serializable;
+
+public class Item implements Serializable {
 
     private String name;
     private double price;
     private String description;
     private int calories;
+    private int itemAmount;
 
     public String getName() {
         return name;
@@ -38,5 +41,9 @@ public class Item {
     public void setCalories(int calories) {
         this.calories = calories;
     }
+
+    public int getItemAmount() { return itemAmount; }
+
+    public void setItemAmount(int itemAmount) { this.itemAmount = itemAmount; }
 
 }
