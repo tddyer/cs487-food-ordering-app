@@ -6,11 +6,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +29,7 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView menuRecycler;
     private ItemsAdapter itemsAdapter;
 
-    String[] foodNames = {
+    static String[] foodNames = {
             "Cheeseburger",
             "Salad",
             "Spaghetti and Meatballs",
@@ -108,8 +113,56 @@ public class MainActivity extends AppCompatActivity
     // From OnClickListener
     @Override
     public void onClick(View v) {  // click listener called by ViewHolder clicks
-        int pos = menuRecycler.getChildLayoutPosition(v);
-        itemsInCart.add(menuItems.get(pos));
+        final CharSequence[] amount = {"1","2","3","4","5"};
+        final String[] tmpIndex = new String[1];
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Please select the amount of dishes.")
+                .setSingleChoiceItems(amount, -1, new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int index){
+                        tmpIndex[0] = null;
+                        tmpIndex[0] = (String) amount[index];
+                    }
+                });
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                int pos = menuRecycler.getChildLayoutPosition(v);
+                Item itemTmp = menuItems.get(pos);
+
+
+                Item it = null;
+                for(Item ci : itemsInCart){
+                    if(ci.getName().equals(itemTmp.getName())){
+                        it = ci;
+                        break;
+                    }
+                }
+                if(it != null){
+                    int position = itemsInCart.indexOf(it);
+                    int newItemAmount = Integer.parseInt(tmpIndex[0]);
+                    int currentItemAmount = it.getItemAmount();
+                    itemsInCart.get(pos).setItemAmount(newItemAmount+currentItemAmount);
+                }else{
+                    itemTmp.setItemAmount(Integer.parseInt(tmpIndex[0]));
+                    itemsInCart.add(itemTmp);
+                }
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // do nothing
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+//        int pos = menuRecycler.getChildLayoutPosition(v);
+//        itemsInCart.add(menuItems.get(pos));
+//        Toast.makeText(this.getApplicationContext(), menuItems.get(pos).getName()+" added", Toast.LENGTH_SHORT).show();
     }
 
     // From OnLongClickListener
@@ -148,12 +201,22 @@ public class MainActivity extends AppCompatActivity
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         final CharSequence[] itemNames = new CharSequence[itemsInCart.size()];
-        for (int i = 0; i < itemsInCart.size(); i++)
-            itemNames[i] = itemsInCart.get(i).getName();
+
+        for (int i = 0; i < itemsInCart.size(); i++){
+            itemNames[i] = itemsInCart.get(i).getName()+" (amount: "+itemsInCart.get(i).getItemAmount()+")";
+        }
+
 
         builder.setPositiveButton("Checkout", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // TODO: navigate to checkout activity here
+                if(itemsInCart.size() == 0){
+                    emptyCartAlert();
+                }else{
+                    Intent it = new Intent(MainActivity.this, CheckOutActivity.class);
+                    it.putExtra("selectedItems", (Serializable) itemsInCart);
+                    startActivity(it);
+                }
             }
         });
         builder.setNegativeButton("Continue Shopping", new DialogInterface.OnClickListener() {
@@ -166,6 +229,21 @@ public class MainActivity extends AppCompatActivity
         builder.setItems(itemNames, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // TODO: remove items here
+                itemsInCart.remove(which);
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void emptyCartAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your Cart is Empty.");
+
+        builder.setNegativeButton("Continue Shopping", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // do nothing
             }
         });
 
