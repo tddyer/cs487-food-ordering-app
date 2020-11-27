@@ -7,4 +7,7 @@
     <string name="staff_login">Staff Login</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="staff_id">Staff ID</string>
+    <string name="user_reports">User Reports</string>
+    <string name="active_orders">Active Orders</string>
 </resources>
