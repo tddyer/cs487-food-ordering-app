@@ -2,4 +2,7 @@
     <string name="app_name">OrderQuik</string>
     <string name="view_shopping_cart">View Shopping Cart</string>
     <string name="view_account">View Account</string>
+    <string name="account_login">Account Login</string>
+    <string name="guest_login">Guest Login</string>
+    <string name="staff_login">Staff Login</string>
 </resources>
