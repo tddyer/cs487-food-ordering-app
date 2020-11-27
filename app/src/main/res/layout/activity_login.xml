@@ -15,7 +15,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.45" />
+        app:layout_constraintVertical_bias="0.45"
+        android:onClick="login"/>
 
     <Button
         android:id="@+id/guestLogin"
@@ -25,7 +26,8 @@
         android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="@+id/userLogin"
         app:layout_constraintStart_toStartOf="@+id/userLogin"
-        app:layout_constraintTop_toBottomOf="@+id/userLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/userLogin"
+        android:onClick="login"/>
 
     <Button
         android:id="@+id/staffLogin"
@@ -35,13 +37,14 @@
         android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="@+id/guestLogin"
         app:layout_constraintStart_toStartOf="@+id/guestLogin"
-        app:layout_constraintTop_toBottomOf="@+id/guestLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/guestLogin"
+        android:onClick="login"/>
 
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OrderQuik"
+        android:text="@string/app_name"
         android:textColor="@color/purple_500"
         android:textSize="56sp"
         android:textStyle="bold|italic"
