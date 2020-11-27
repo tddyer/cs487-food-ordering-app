@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
                 // account login
                 userLogin();
                 break;
-            case R.id.guestLogin: // launch main activity with login_id as "guest" and no password
+            case R.id.guestLogin: // launch main activity without login info
                 guestLogin();
                 break;
             case R.id.staffLogin: // launch staff portal with valid staff credentials
@@ -46,24 +46,22 @@ public class LoginActivity extends AppCompatActivity {
     public void guestLogin() {
         // navigate to main activity with guest login info
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("LOGIN_ID", "guest");
-        intent.putExtra("LOGIN_PASSWORD", "");
         startActivity(intent);
     }
 
     public void userLogin() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         LayoutInflater inflater = LayoutInflater.from(this);
         @SuppressLint("InflateParams")
         final View view = inflater.inflate(R.layout.user_login_layout, null);
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view);
         builder.setTitle("User Login");
 
         builder.setPositiveButton("Login", (dialog, id) -> {
-            EditText em = findViewById(R.id.textEmail);
-            EditText password = findViewById(R.id.textPassword);
+            EditText em = view.findViewById(R.id.textEmail);
+            EditText password = view.findViewById(R.id.textPassword);
 
             String email;
             String pwrd;
@@ -73,11 +71,12 @@ public class LoginActivity extends AppCompatActivity {
                 pwrd = String.valueOf(password.getText());
 
                 Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("LOGIN_ID", email);
+                intent.putExtra("LOGIN_EMAIL", email);
                 intent.putExtra("LOGIN_PASSWORD", pwrd);
                 startActivity(intent);
 
             } catch (NullPointerException npe) {
+                npe.printStackTrace();
                 userLogin(); // could re-display with some error message upon invalid login
             }
 

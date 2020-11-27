@@ -29,6 +29,9 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView menuRecycler;
     private ItemsAdapter itemsAdapter;
 
+    private Bundle bundle;
+    private User user;
+
     static String[] foodNames = {
             "Cheeseburger",
             "Salad",
@@ -89,6 +92,20 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // getting login information to determine if a guest or user logged in
+        bundle = getIntent().getExtras();
+
+        // user login
+        if (bundle != null) {
+            String email = bundle.getString("LOGIN_EMAIL");
+            String pwrd = bundle.getString("LOGIN_PASSWORD");
+            user = new User(email, pwrd);
+
+        } else {
+            // guest login
+            user = new Guest();
+        }
 
         menuRecycler = findViewById(R.id.menuRecycler);
         itemsAdapter = new ItemsAdapter(menuItems, this);
