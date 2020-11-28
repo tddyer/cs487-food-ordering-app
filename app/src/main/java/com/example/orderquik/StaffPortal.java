@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class StaffPortal extends AppCompatActivity
     implements View.OnClickListener, View.OnLongClickListener {
@@ -19,9 +21,13 @@ public class StaffPortal extends AppCompatActivity
     private StaffMember staff;
 
     private ArrayList<ArrayList<CheckoutItem>> orders = new ArrayList<>();
+    private ArrayList<HashMap<String, Integer>> itemRatings = new ArrayList<>();
 
     private RecyclerView activeOrdersRecycler;
     private ActiveOrdersAdapter activeOrdersAdapter;
+
+    private RecyclerView reportsRecycler;
+    private ReportsAdapter reportsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +50,13 @@ public class StaffPortal extends AppCompatActivity
 
         activeOrdersRecycler.setAdapter(activeOrdersAdapter);
         activeOrdersRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+        // ratings recycler setup
+        reportsRecycler = findViewById(R.id.reportsRecycler);
+        reportsAdapter = new ReportsAdapter(itemRatings, this);
+
+        reportsRecycler.setAdapter(reportsAdapter);
+        reportsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
 
         // filling active orders with test data
@@ -87,6 +100,34 @@ public class StaffPortal extends AppCompatActivity
         }
 
         activeOrdersAdapter.notifyDataSetChanged();
+
+        for (int i = 0; i < 5; i++) {
+            HashMap<String, Integer> rating = new HashMap<>();
+            switch (i) {
+                case 0:
+                    rating.put("Cheeseburger", 9);
+                    break;
+                case 1:
+                    rating.put("Lasagna", 2);
+                    break;
+                case 2:
+                    rating.put("Gyros", 4);
+                    break;
+                case 3:
+                    rating.put("Lemon Baked Cod", 14);
+                    break;
+                case 4:
+                    rating.put("Sweet & Sour Chicken", 8);
+                    break;
+            }
+
+            itemRatings.add(rating);
+        }
+
+        Collections.sort(itemRatings, new RatingsComparator());
+
+        reportsAdapter.notifyDataSetChanged();
+
 
 //        Log.d("STAFFPORTAL", "onCreate: \n" + staff.getStaffID());
     }
