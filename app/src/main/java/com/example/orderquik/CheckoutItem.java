@@ -7,6 +7,14 @@ public class CheckoutItem implements Serializable {
     private double coPrice;
     private int itemTotal;
 
+    public CheckoutItem() {}
+
+    public CheckoutItem(String name, double price, int total) {
+        this.coName = name;
+        this.coPrice = price;
+        this.itemTotal = total;
+    }
+
 
     public String getCoName() {
         return coName;
