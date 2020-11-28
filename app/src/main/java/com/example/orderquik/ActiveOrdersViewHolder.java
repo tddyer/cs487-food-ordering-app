@@ -9,7 +9,6 @@ public class ActiveOrdersViewHolder extends RecyclerView.ViewHolder {
 
         TextView orderTitle;
         TextView itemNames;
-        TextView itemCounts;
 
         ActiveOrdersViewHolder(View view) {
             super(view);

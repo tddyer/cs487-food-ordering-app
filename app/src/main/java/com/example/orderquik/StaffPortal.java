@@ -1,15 +1,19 @@
 package com.example.orderquik;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 
-public class StaffPortal extends AppCompatActivity {
+public class StaffPortal extends AppCompatActivity
+    implements View.OnClickListener, View.OnLongClickListener {
 
     private Bundle bundle;
     private StaffMember staff;
@@ -37,9 +41,13 @@ public class StaffPortal extends AppCompatActivity {
         // active orders recycler setup
         activeOrdersRecycler = findViewById(R.id.activeOrdersRecycler);
         activeOrdersAdapter = new ActiveOrdersAdapter(orders, this);
+
         activeOrdersRecycler.setAdapter(activeOrdersAdapter);
         activeOrdersRecycler.setLayoutManager(new LinearLayoutManager(this));
 
+
+        // filling active orders with test data
+        //  - this would come from a database containing the current active orders normally
         for (int i = 0; i < 5; i++) {
             ArrayList<CheckoutItem> order = new ArrayList<>();
             switch (i) {
@@ -78,21 +86,45 @@ public class StaffPortal extends AppCompatActivity {
             orders.add(order);
         }
 
-        // populating recycler with test data
-//        for (int i = 0; i < 5; i++) {
-//            ArrayList<CheckoutItem> order = new ArrayList<>();
-//            for (int j = 0; j < 2; j++) {
-//                CheckoutItem it = new CheckoutItem();
-//                it.setCoName("Item " + j);
-//                it.setCoPrice((j + 1) * 4);
-//                it.setItemTotal(j + 1);
-//                order.add(it);
-//            }
-//            orders.add(order);
-//        }
-
         activeOrdersAdapter.notifyDataSetChanged();
 
 //        Log.d("STAFFPORTAL", "onCreate: \n" + staff.getStaffID());
     }
+
+    public void completeOrder(int pos) {
+        if (!orders.isEmpty()) {
+            orders.remove(pos);
+            activeOrdersAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        // do nothing
+        Log.d("HERE", "onClick: ");
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        Log.d("HERE", "onLongClick: ");
+        int pos = activeOrdersRecycler.getChildLayoutPosition(view);
+        confirmOrderCompletion(pos);
+        return true;
+    }
+
+    // alert dialogs
+
+    public void confirmOrderCompletion(final int pos) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton("OK", (dialog, id) -> completeOrder(pos));
+        builder.setNegativeButton("CANCEL", (dialog, id) -> {
+            // do nothing
+        });
+        builder.setMessage("Are you sure you want to mark this order as complete?");
+        builder.setTitle("Complete Order");
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 }
