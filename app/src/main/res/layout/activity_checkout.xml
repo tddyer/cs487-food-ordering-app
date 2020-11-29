@@ -35,7 +35,7 @@
         android:id="@+id/CheckOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="24dp"
         android:contextClickable="false"
         android:onClick="checkoutBTNclicked"
         android:text="Check Out"
@@ -82,13 +82,44 @@
 
     <TextView
         android:id="@+id/total"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:text="Total"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/pickupCheckBox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/rewardPointUse" />
+
+    <Switch
+        android:id="@+id/rewardPointUse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="14dp"
+        android:checked="false"
+        app:layout_constraintStart_toEndOf="@+id/showRewardPoints"
+        app:layout_constraintTop_toBottomOf="@+id/checkoutRecycler" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="Reward Points:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkoutRecycler" />
+
+    <TextView
+        android:id="@+id/showRewardPoints"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/checkoutRecycler" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
