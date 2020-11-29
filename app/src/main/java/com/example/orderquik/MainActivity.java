@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.accounts.Account;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity
     static String[] foodNames = {
             "Cheeseburger",
             "Salad",
-            "Spaghetti and Meatballs",
+            "[SPECIAL] Spaghetti and Meatballs",
             "Gyros",
             "Lasagna",
             "Macaroni and Cheese",
@@ -206,10 +207,16 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.menuProfile:
                 // TODO: view profile here
+                viewAccount();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    public void viewAccount(){
+        Intent intent = new Intent(MainActivity.this, AccountActivity.class);
+        intent.putExtra("UserInFo", (Serializable) user);
+        startActivity(intent);
     }
 
     // alert dialogs
@@ -232,6 +239,7 @@ public class MainActivity extends AppCompatActivity
                 }else{
                     Intent it = new Intent(MainActivity.this, CheckOutActivity.class);
                     it.putExtra("selectedItems", (Serializable) itemsInCart);
+                    it.putExtra("user", (Serializable) user);
                     startActivity(it);
                 }
             }
