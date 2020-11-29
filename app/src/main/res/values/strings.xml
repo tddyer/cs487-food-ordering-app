@@ -10,4 +10,10 @@
     <string name="staff_id">Staff ID</string>
     <string name="user_reports">User Reports</string>
     <string name="active_orders">Active Orders</string>
+    <string name="user_account">User Account</string>
+    <string name="useremail">Email:</string>
+    <string name="userpassword">Password:</string>
+    <string name="reward_points">Reward Points:</string>
+    <string name="user_email">user email</string>
+    <string name="user_password">user password</string>
 </resources>
