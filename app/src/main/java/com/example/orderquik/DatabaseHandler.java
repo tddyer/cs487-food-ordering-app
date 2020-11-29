@@ -15,8 +15,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     private SQLiteDatabase database;
     private static final int DATABASE_VERSION = 1; // increment when DB Schema is changed
-
     public static final String DATABASE_NAME = "OrderQuikDB";
+
 
     // MenuItems table vars + creation string
     private static final String MENU_ITEMS_TABLE_NAME = "MenuItems";
@@ -34,6 +34,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     MENU_ITEM_CALS + " INTEGER)";
 
 
+    // ActiveOrders tabls vars + creation string
+    private static final String ACTIVE_ORDERS_TABLE_NAME = "ActiveOrders";
+
+    private static final String ACTIVE_ORDER_ID = "ActiveOrderID";
+    private static final String ACTIVE_ORDER_ITEM = "ItemName";
+    private static final String ACTIVE_ORDER_ITEM_COUNT = "ItemCount";
+
+    private static final String SQL_CREATE_ACTIVE_ORDERS_TABLE =
+            "CREATE TABLE " + ACTIVE_ORDERS_TABLE_NAME + " (" +
+                    ACTIVE_ORDER_ID + " INTEGER," +
+                    ACTIVE_ORDER_ITEM + " TEXT," +
+                    ACTIVE_ORDER_ITEM_COUNT + " INTEGER, PRIMARY KEY (ActiveOrderID, ItemName))";
+
+
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         database = getWritableDatabase();
@@ -49,6 +63,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         // create any tables here
         sqLiteDatabase.execSQL(SQL_CREATE_MENU_ITEMS_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_ORDERS_TABLE);
     }
 
     @Override
@@ -79,6 +94,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int count = database.delete(MENU_ITEMS_TABLE_NAME, "ItemName = ?", new String[] {name});
     }
 
+    // delete all items from db
     public void flushItems() {
         database.execSQL(String.format("DELETE FROM %s;", MENU_ITEMS_TABLE_NAME));
     }
@@ -112,5 +128,109 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         return items;
+    }
+
+
+
+    /* ActiveOrders table methods */
+
+
+    // generates unique active order id
+    public int generateActiveOrderID() {
+
+        Cursor cursor = database.query(
+                ACTIVE_ORDERS_TABLE_NAME,
+                new String[] {ACTIVE_ORDER_ID, ACTIVE_ORDER_ITEM, ACTIVE_ORDER_ITEM_COUNT},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        int id = cursor.getCount() + 1;
+        cursor.close();
+
+        return id;
+    }
+
+    // add active order to db
+    public void addActiveOrder(ArrayList<CheckoutItem> items) {
+
+        int orderID = generateActiveOrderID();
+
+        for (CheckoutItem item : items) {
+            ContentValues vals = new ContentValues();
+            vals.put(ACTIVE_ORDER_ID, orderID);
+            vals.put(ACTIVE_ORDER_ITEM, item.getCoName());
+            vals.put(ACTIVE_ORDER_ITEM_COUNT, item.getItemTotal());
+
+            database.insert(ACTIVE_ORDERS_TABLE_NAME, null, vals);
+        }
+    }
+
+    // delete active order from db
+    public void deleteItem(int id) {
+        int count = database.delete(ACTIVE_ORDERS_TABLE_NAME, "ActiveOrderID = ?", new String[] {String.valueOf(id)});
+    }
+
+
+    // fetch all active orders from db
+    public ArrayList<Order> loadActiveOrders() {
+
+        Cursor cursor = database.query(
+                ACTIVE_ORDERS_TABLE_NAME,
+                new String[] {ACTIVE_ORDER_ID, ACTIVE_ORDER_ITEM, ACTIVE_ORDER_ITEM_COUNT},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        ArrayList<Order> orders = new ArrayList<>();
+        ArrayList<CheckoutItem> currOrder = new ArrayList<>();
+
+        int currID = -1;
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                int count = cursor.getInt(2);
+
+                if (currID < 0) {
+                    currID = id;
+                } else if (id != currID) {
+                    // save old order
+                    orders.add(new Order(currID, currOrder));
+
+                    // update to new order id and empty old order
+                    currID = id;
+                    currOrder = new ArrayList<>();
+                }
+
+                CheckoutItem item = new CheckoutItem(name, 0.0, count);
+                currOrder.add(item);
+
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+
+        return orders;
+    }
+
+    public boolean tableExists(String name) {
+        Cursor cursor = database.rawQuery(
+                "SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", name}
+        );
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
 }

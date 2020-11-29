@@ -22,12 +22,15 @@ public class StaffPortal extends AppCompatActivity
 
     private ArrayList<ArrayList<CheckoutItem>> orders = new ArrayList<>();
     private ArrayList<HashMap<String, Integer>> itemRatings = new ArrayList<>();
+    private ArrayList<Order> databaseOrders = new ArrayList<>();
 
     private RecyclerView activeOrdersRecycler;
     private ActiveOrdersAdapter activeOrdersAdapter;
 
     private RecyclerView reportsRecycler;
     private ReportsAdapter reportsAdapter;
+
+    DatabaseHandler databaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,12 @@ public class StaffPortal extends AppCompatActivity
 
         reportsRecycler.setAdapter(reportsAdapter);
         reportsRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+
+        this.deleteDatabase("OrderQuikDB");
+
+        databaseHandler = new DatabaseHandler(this);
+
 
 
         // filling active orders with test data
@@ -100,6 +109,18 @@ public class StaffPortal extends AppCompatActivity
         }
 
         activeOrdersAdapter.notifyDataSetChanged();
+
+        // populating active orders table with some filler data
+        if (databaseHandler.tableExists("ActiveOrders")) {
+            for (ArrayList<CheckoutItem> order : orders) {
+                databaseHandler.addActiveOrder(order);
+            }
+        }
+
+
+        // fetching active orders from database
+        databaseOrders = databaseHandler.loadActiveOrders();
+
 
         for (int i = 0; i < 5; i++) {
             HashMap<String, Integer> rating = new HashMap<>();

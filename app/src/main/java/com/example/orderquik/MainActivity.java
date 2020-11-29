@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity
         menuRecycler.setAdapter(itemsAdapter);
         menuRecycler.setLayoutManager(new LinearLayoutManager(this));
 
+
+
         databaseHandler = new DatabaseHandler(this);
 
         // refresh menu items database when local list is updated - this would be completely different if we
