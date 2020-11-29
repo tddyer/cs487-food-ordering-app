@@ -10,6 +10,13 @@ public class Item implements Serializable {
     private int calories;
     private int itemAmount;
 
+    public Item(String name, double price, String desc, int cals) {
+        this.name = name;
+        this.price = price;
+        this.description = desc;
+        this.calories = cals;
+    }
+
     public String getName() {
         return name;
     }
