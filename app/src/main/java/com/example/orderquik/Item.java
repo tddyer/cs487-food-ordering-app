@@ -10,6 +10,8 @@ public class Item implements Serializable {
     private int calories;
     private int itemAmount;
 
+    public Item() {}
+
     public Item(String name, double price, String desc, int cals) {
         this.name = name;
         this.price = price;

@@ -27,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String MENU_ITEM_CALS = "ItemCalories";
 
     private static final String SQL_CREATE_MENU_ITEMS_TABLE =
-            "CREATE TABLE " + MENU_ITEMS_TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + MENU_ITEMS_TABLE_NAME + " (" +
                     MENU_ITEM_NAME + " TEXT PRIMARY KEY," +
                     MENU_ITEM_PRICE + " FLOAT," +
                     MENU_ITEM_DESC + " TEXT," +
@@ -79,6 +79,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int count = database.delete(MENU_ITEMS_TABLE_NAME, "ItemName = ?", new String[] {name});
     }
 
+    public void flushItems() {
+        database.execSQL(String.format("DELETE FROM %s;", MENU_ITEMS_TABLE_NAME));
+    }
+
     // fetch all items from db
     public ArrayList<Item> loadMenuItems() {
         ArrayList<Item> items = new ArrayList<>();
@@ -90,7 +94,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
-                MENU_ITEM_NAME
+                null
         );
 
         if (cursor != null) {

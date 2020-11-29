@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity
     private Bundle bundle;
     private User user;
 
+    private DatabaseHandler databaseHandler;
+
     static String[] foodNames = {
             "Cheeseburger",
             "Salad",
@@ -113,7 +115,15 @@ public class MainActivity extends AppCompatActivity
         menuRecycler.setAdapter(itemsAdapter);
         menuRecycler.setLayoutManager(new LinearLayoutManager(this));
 
-        // populating recycler with test data
+        databaseHandler = new DatabaseHandler(this);
+
+        // refresh menu items database when local list is updated - this would be completely different if we
+        // had a cloud database implemented (menu items wouldn't be editable from a user device)
+        databaseHandler.flushItems();
+
+        // populating recycler with test data - this would be different if we had a cloud database
+        // implemented (items would be fetched from database and loaded in instead of using a locally
+        // stored list
         for (int i = 0; i < foodNames.length; i++) {
             Item it = new Item();
             it.setName(foodNames[i]);
@@ -121,6 +131,7 @@ public class MainActivity extends AppCompatActivity
             it.setDescription(foodDescriptions[i]);
             it.setCalories(foodCalories[i]);
             menuItems.add(it);
+            databaseHandler.addItem(it);
         }
 
         itemsAdapter.notifyDataSetChanged();
