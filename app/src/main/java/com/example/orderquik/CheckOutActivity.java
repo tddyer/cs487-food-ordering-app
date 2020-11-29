@@ -1,11 +1,14 @@
 package com.example.orderquik;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -13,6 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +37,13 @@ public class CheckOutActivity extends AppCompatActivity{
     private CheckBox pickupChecked;
     private CheckBox deliveryChecked;
     private TextView total;
+    private TextView userRewardPoints;
+    private Switch rewardpointsSwitch;
+
     public Double totalAmount=0.0;
+    public int rewardPointsTMP=0;
+
+    public User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +54,8 @@ public class CheckOutActivity extends AppCompatActivity{
         dineinChecked = findViewById(R.id.dineinCheckBox);
         pickupChecked = findViewById(R.id.pickupCheckBox);
         deliveryChecked = findViewById(R.id.deliveryCheckBox);
+        userRewardPoints = findViewById(R.id.showRewardPoints);
+        rewardpointsSwitch = findViewById(R.id.rewardPointUse);
         total = findViewById(R.id.total);
 
         checkoutItems.clear();
@@ -70,6 +87,17 @@ public class CheckOutActivity extends AppCompatActivity{
             }
 
         }
+        if(getIntent().hasExtra("user")){
+            user = (User) getIntent().getSerializableExtra("user");
+            if(user.getEmail().isEmpty() || user.getEmail().equals("") || user.getEmail().equals("null")){
+                userRewardPoints.setText("N/A");
+                rewardpointsSwitch.setVisibility(View.INVISIBLE);
+            }else{
+                rewardPointsTMP = user.getRewardPoints();
+                userRewardPoints.setText(String.valueOf(rewardPointsTMP));
+            }
+        }
+
         total.setText("Total: $"+totalAmount.toString());
         checkoutRecycler = findViewById(R.id.checkoutRecycler);
         checkoutItemsAdapter = new CheckoutItemsAdapter(checkoutItems, this);
@@ -83,8 +111,76 @@ public class CheckOutActivity extends AppCompatActivity{
         if(orderoptionChecked() != 1)
             checkOptionAlert();
         else{
-            optionalSurveyAlert();
+            if(rewardpointsSwitch.isChecked()){
+                //when user prefers to user reward points
+                useRewardPoints();
+            }else{
+                checkoutAlert();
+            }
+
         }
+    }
+    public void useRewardPoints(){
+        int points = user.getRewardPoints();
+        if(points<100){
+            rewardPointsAlert(); //can not use rewards points
+        }else{
+            rewardPointsAppliedAlert();
+        }
+    }
+    public void checkoutAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Check out Alert");
+        builder.setMessage("Your reward points are not applied. Total: $"+totalAmount);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                optionalSurveyAlert();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // do nothing
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    public void rewardPointsAppliedAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Check out Alert");
+        builder.setMessage("Your reward points are applied. Total: $"+(totalAmount-rewardPointsTMP/100));
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                totalAmount = totalAmount-Math.floor(rewardPointsTMP/100);
+                rewardPointsTMP = (int) (rewardPointsTMP - Math.floor(rewardPointsTMP/100));
+                user.setRewardPoints(rewardPointsTMP);
+                optionalSurveyAlert();
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // do nothing
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    public void rewardPointsAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your reward points is below 100. Can not use it at this point.");
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // do nothing
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
     public int orderoptionChecked(){
         int dineinCount=0;
@@ -118,12 +214,23 @@ public class CheckOutActivity extends AppCompatActivity{
 
         builder.setPositiveButton("START", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                optionalSurvey();
+
+                if(user.getEmail().isEmpty() || user.getEmail().equals("") || user.getEmail().equals("null")){
+                    optionalSurvey();
+                }else{
+                    //if they use their accounts, they will also get rewards points, 2points per dollar spent
+                    double tmp = Math.floor(totalAmount);
+                    int AddRewardPoints = ((int) tmp)*2;
+                    userRewardPoints.setText(String.valueOf(rewardPointsTMP+AddRewardPoints));
+                    optionalSurvey();
+                }
+
             }
         });
         builder.setNegativeButton("SKIP", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                //
+                // TODO: go to the account page, and customers can view the expected time of order
+                viewAccount();
             }
         });
 
@@ -143,7 +250,8 @@ public class CheckOutActivity extends AppCompatActivity{
 
         bd.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-               // TODO: view the expected time of order page
+               // TODO: go to the account page, and customers can view the expected time of order
+                viewAccount();
             }
         });
 
@@ -151,4 +259,10 @@ public class CheckOutActivity extends AppCompatActivity{
         dialog.show();
     }
 
+    //go to the account page, and customers can view the expected time of order page
+    public void viewAccount(){
+        Intent intent = new Intent(CheckOutActivity.this, AccountActivity.class);
+        intent.putExtra("done Order", (Serializable) user);
+        startActivity(intent);
+    }
 }
