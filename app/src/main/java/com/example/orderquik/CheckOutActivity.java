@@ -45,6 +45,8 @@ public class CheckOutActivity extends AppCompatActivity{
 
     public User user;
 
+    private DatabaseHandler databaseHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -57,6 +59,8 @@ public class CheckOutActivity extends AppCompatActivity{
         userRewardPoints = findViewById(R.id.showRewardPoints);
         rewardpointsSwitch = findViewById(R.id.rewardPointUse);
         total = findViewById(R.id.total);
+
+        databaseHandler = new DatabaseHandler(this);
 
         checkoutItems.clear();
 
@@ -106,6 +110,7 @@ public class CheckOutActivity extends AppCompatActivity{
 
         checkoutItemsAdapter.notifyDataSetChanged();
     }
+
     //Check out Button Clicked
     public void checkoutBTNclicked(View view){
         if(orderoptionChecked() != 1)
@@ -133,15 +138,12 @@ public class CheckOutActivity extends AppCompatActivity{
         builder.setTitle("Check out Alert");
         builder.setMessage("Your reward points are not applied. Total: $"+totalAmount);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                optionalSurveyAlert();
-            }
+        builder.setPositiveButton("OK", (dialog, id) -> {
+            addOrderToDB(); // saving order to database
+            optionalSurveyAlert();
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // do nothing
-            }
+        builder.setNegativeButton("Cancel", (dialog, id) -> {
+            // do nothing
         });
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -151,19 +153,18 @@ public class CheckOutActivity extends AppCompatActivity{
         builder.setTitle("Check out Alert");
         builder.setMessage("Your reward points are applied. Total: $"+(totalAmount-rewardPointsTMP/100));
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                totalAmount = totalAmount-Math.floor(rewardPointsTMP/100);
-                rewardPointsTMP = (int) (rewardPointsTMP - Math.floor(rewardPointsTMP/100));
-                user.setRewardPoints(rewardPointsTMP);
-                optionalSurveyAlert();
+        builder.setPositiveButton("OK", (dialog, id) -> {
 
-            }
+            addOrderToDB(); // saving order to database
+
+            totalAmount = totalAmount-Math.floor(rewardPointsTMP/100);
+            rewardPointsTMP = (int) (rewardPointsTMP - Math.floor(rewardPointsTMP/100));
+            user.setRewardPoints(rewardPointsTMP);
+            optionalSurveyAlert();
+
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // do nothing
-            }
+        builder.setNegativeButton("Cancel", (dialog, id) -> {
+            // do nothing
         });
 
         AlertDialog dialog = builder.create();
@@ -264,5 +265,9 @@ public class CheckOutActivity extends AppCompatActivity{
         Intent intent = new Intent(CheckOutActivity.this, AccountActivity.class);
         intent.putExtra("done Order", (Serializable) user);
         startActivity(intent);
+    }
+
+    public void addOrderToDB() {
+        databaseHandler.addActiveOrder((ArrayList<CheckoutItem>) checkoutItems);
     }
 }

@@ -226,6 +226,8 @@ public class MainActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
     public void viewAccount(){
         Intent intent = new Intent(MainActivity.this, AccountActivity.class);
         intent.putExtra("UserInFo", (Serializable) user);

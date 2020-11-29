@@ -62,7 +62,7 @@ public class StaffPortal extends AppCompatActivity
         reportsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
 
-        this.deleteDatabase("OrderQuikDB");
+//        this.deleteDatabase("OrderQuikDB");
 
         databaseHandler = new DatabaseHandler(this);
 
@@ -108,10 +108,9 @@ public class StaffPortal extends AppCompatActivity
             orders.add(order);
         }
 
-        activeOrdersAdapter.notifyDataSetChanged();
 
         // populating active orders table with some filler data
-        if (databaseHandler.tableExists("ActiveOrders")) {
+        if (!databaseHandler.tableExists("ActiveOrders")) {
             for (ArrayList<CheckoutItem> order : orders) {
                 databaseHandler.addActiveOrder(order);
             }
@@ -120,6 +119,13 @@ public class StaffPortal extends AppCompatActivity
 
         // fetching active orders from database
         databaseOrders = databaseHandler.loadActiveOrders();
+
+        orders.clear();
+        for (Order o : databaseOrders) {
+            orders.add(o.getItems());
+        }
+
+        activeOrdersAdapter.notifyDataSetChanged();
 
 
         for (int i = 0; i < 5; i++) {

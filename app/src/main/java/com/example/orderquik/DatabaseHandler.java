@@ -209,7 +209,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     // update to new order id and empty old order
                     currID = id;
                     currOrder = new ArrayList<>();
-                }
+                } else if (i == cursor.getCount() - 1)
+                    orders.add(new Order(currID, currOrder));
 
                 CheckoutItem item = new CheckoutItem(name, 0.0, count);
                 currOrder.add(item);
@@ -230,7 +231,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.close();
             return false;
         }
+        int count = cursor.getInt(0);
         cursor.close();
-        return true;
+        return count > 0;
     }
 }
