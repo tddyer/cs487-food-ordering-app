@@ -41,11 +41,15 @@ public class AccountActivity extends AppCompatActivity {
     public Button readyTimeBTN;
     public Button updateBTN;
 
+    private DatabaseHandler databaseHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+
+        databaseHandler = new DatabaseHandler(this);
 
         userEmail = findViewById(R.id.userEmail);userEmailText = findViewById(R.id.userEmailText);
         userPW = findViewById(R.id.userPassword);userPWText = findViewById(R.id.userPasswordText);
@@ -139,17 +143,9 @@ public class AccountActivity extends AppCompatActivity {
         final String[] update = {"Password","Credit Card Info", "Delivery Address"};
         AlertDialog.Builder bd = new AlertDialog.Builder(this);
         bd.setTitle("Update");
-        bd.setSingleChoiceItems(update, -1, new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int index){
-                tmp[0] = update[index];
-            }
-        });
+        bd.setSingleChoiceItems(update, -1, (dialog, index) -> tmp[0] = update[index]);
 
-        bd.setPositiveButton("update", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                viewUpdateAlert(tmp[0]);
-            }
-        });
+        bd.setPositiveButton("update", (dialog, id) -> viewUpdateAlert(tmp[0]));
         bd.setNegativeButton("Cancel", (dialog, id) -> {
             // do nothing
         });
@@ -164,31 +160,32 @@ public class AccountActivity extends AppCompatActivity {
         alertBuilder.setTitle("Update "+tmp);
         alertBuilder.setView(txtEdit);
 
-        alertBuilder.setPositiveButton("update", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String updateTMP = txtEdit.getText().toString();
+        alertBuilder.setPositiveButton("update", (dialog, which) -> {
+            String updateTMP = txtEdit.getText().toString();
 
-                if(tmp.equals("Password")){
-                    UserTMP.setPassword(updateTMP);
-                    userPW.setText(updateTMP);
+            // 1: delete old user entry
+            databaseHandler.deleteUser(UserTMP.getEmail());
 
-                }else if(tmp.equals("Credit Card Info")){
-                    UserTMP.setCreditCardInfo(updateTMP);
-                    creditCardInfo.setText(updateTMP);
+            // 2: update local user objects value
+            if(tmp.equals("Password")){
+                UserTMP.setPassword(updateTMP);
+                userPW.setText(updateTMP);
 
-                }else{
-                    UserTMP.setDeliveryAddress(updateTMP);
-                    deliveryAddress.setText(updateTMP);
-                }
+            }else if(tmp.equals("Credit Card Info")){
+                UserTMP.setCreditCardInfo(updateTMP);
+                creditCardInfo.setText(updateTMP);
 
+            }else{
+                UserTMP.setDeliveryAddress(updateTMP);
+                deliveryAddress.setText(updateTMP);
             }
+
+            // 3: write updated user var to database as new entry
+            databaseHandler.addUser(UserTMP);
+
         });
-        alertBuilder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                return;
-            }
+        alertBuilder.setNegativeButton("CANCEL", (dialog, which) -> {
+            return;
         });
 
         alertBuilder.show();
