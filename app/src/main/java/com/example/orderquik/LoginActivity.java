@@ -22,9 +22,6 @@ import java.io.Serializable;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final int LOGIN = 1;
-    public static final int SIGNUP = 2;
-
     private DatabaseHandler databaseHandler;
 
     @Override
@@ -141,9 +138,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     // successful login
                     Intent intent = new Intent(this, MainActivity.class);
-                    intent.putExtra("ID", LOGIN);
-                    intent.putExtra("LOGIN_EMAIL", email);
-                    intent.putExtra("LOGIN_PASSWORD", pwrd);
+                    intent.putExtra("USER_DATA", user);
                     startActivity(intent);
                 } else {
                     userLogin(true);
@@ -227,10 +222,8 @@ public class LoginActivity extends AppCompatActivity {
         EditText address = view.findViewById(R.id.addressEdit);
         EditText cardNo = view.findViewById(R.id.creditEdit);
 
-        if (invalid) {
-            Log.d("LOGINACTIVITY", "userSignup: INVALID PASSWRDS");
+        if (invalid)
             confirmPassword.setError("Error: passwords must match. Please try again.");
-        }
 
 
         builder.setPositiveButton("Signup", (dialog, id) -> {
@@ -249,15 +242,15 @@ public class LoginActivity extends AppCompatActivity {
                 card = String.valueOf(cardNo.getText());
 
                 if (confirmPwrd.equals(pwrd)) {
+                    // creating user account + saving to db
+                    User u = new User(email, pwrd, addr, card, 0, "");
+                    databaseHandler.addUser(u);
+
+                    // logging in with entered user info
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("ID", SIGNUP);
-                    intent.putExtra("SIGNUP_EMAIL", email);
-                    intent.putExtra("SIGNUP_PASSWORD", pwrd);
-                    intent.putExtra("SIGNUP_ADDR", addr);
-                    intent.putExtra("SIGNUP_CARD", card);
+                    intent.putExtra("USER_DATA", u);
                     LoginActivity.this.startActivity(intent);
                 } else {
-                    Log.d("TAG", "userSignup: PASSWORDS DONT MATCH");
                     LoginActivity.this.userSignup(true);
                 }
 
