@@ -228,9 +228,10 @@ public class CheckOutActivity extends AppCompatActivity{
     public void optionalSurvey(){
         final CharSequence[] menu = MainActivity.foodNames;
         AlertDialog.Builder bd = new AlertDialog.Builder(this);
-        bd.setTitle("Please choose the best dish");
+        bd.setTitle("Select your favorite dish from the list below to help us optimize our menu options.");
         bd.setSingleChoiceItems(menu, -1, (dialog, index) -> {
             // TODO: save the survey response
+            Log.d("TAG", "optionalSurvey: " + menu[index]);
         });
 
         bd.setPositiveButton("Done", (dialog, id) -> {
