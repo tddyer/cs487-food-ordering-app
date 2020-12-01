@@ -225,15 +225,6 @@ public class CheckOutActivity extends AppCompatActivity{
         builder.setPositiveButton("START", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 optionalSurvey();
-//                if(user.getEmail().isEmpty() || user.getEmail().equals("") || user.getEmail().equals("null")){
-//                    optionalSurvey();
-//                }else{
-//                    //if they use their accounts, they will also get rewards points, 2points per dollar spent
-//                    double tmp = Math.floor(totalAmount);
-//                    int AddRewardPoints = ((int) tmp)*2;
-//                    userRewardPoints.setText(String.valueOf(rewardPointsTMP+AddRewardPoints));
-//                    optionalSurvey();
-//                }
 
             }
         });
@@ -273,6 +264,7 @@ public class CheckOutActivity extends AppCompatActivity{
     public void viewAccount(){
         Intent intent = new Intent(CheckOutActivity.this, AccountActivity.class);
         intent.putExtra("done Order", (Serializable) user);
+        intent.putExtra("done Order_order history", (Serializable) checkoutItems);
         startActivity(intent);
     }
 
