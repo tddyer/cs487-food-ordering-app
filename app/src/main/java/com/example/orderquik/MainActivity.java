@@ -137,6 +137,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         itemsAdapter.notifyDataSetChanged();
+
+
     }
 
     // implementing functionality for onClick and onLongClick for the view holder
@@ -229,11 +231,23 @@ public class MainActivity extends AppCompatActivity
 
 
     public void viewAccount(){
+        if(getIntent().hasExtra("AccountPageToCheckoutPage")){
+            user = null;
+            user = (User) getIntent().getSerializableExtra("AccountPageToCheckoutPage");
+
+        }
+
         Intent intent = new Intent(MainActivity.this, AccountActivity.class);
         intent.putExtra("UserInFo", (Serializable) user);
         startActivity(intent);
     }
+    @Override
+    public void onBackPressed() {
 
+        super.onBackPressed();
+        Intent it = new Intent(this, LoginActivity.class);
+        startActivity(it);
+    }
     // alert dialogs
 
     public void viewCart() {
