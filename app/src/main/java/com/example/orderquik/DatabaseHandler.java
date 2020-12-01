@@ -34,7 +34,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     MENU_ITEM_CALS + " INTEGER)";
 
 
-    // ActiveOrders tabls vars + creation string
+    // ActiveOrders table vars + creation string
     private static final String ACTIVE_ORDERS_TABLE_NAME = "ActiveOrders";
 
     private static final String ACTIVE_ORDER_ID = "ActiveOrderID";
@@ -48,7 +48,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     ACTIVE_ORDER_ITEM_COUNT + " INTEGER, PRIMARY KEY (ActiveOrderID, ItemName))";
 
 
-    // Users tabls vars + creation string
+    // Users table vars + creation string
     private static final String USERS_TABLE_NAME = "Users";
 
     private static final String USER_EMAIL = "Email";
@@ -68,6 +68,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     USER_LAST_ORDER + " TEXT, PRIMARY KEY (Email))";
 
 
+    // Staff table vars + creation string
+    private static final String STAFF_TABLE_NAME = "Staff";
+
+    private static final String STAFF_ID = "StaffID";
+    private static final String STAFF_PASSWORD = "StaffPassword";
+
+    private static final String SQL_CREATE_STAFF_TABLE =
+            "CREATE TABLE IF NOT EXISTS " + STAFF_TABLE_NAME + " (" +
+                    STAFF_ID + " INTEGER," +
+                    STAFF_PASSWORD + " TEXT, PRIMARY KEY (StaffID, StaffPassword))";
+
+
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         database = getWritableDatabase();
@@ -85,11 +97,70 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_CREATE_MENU_ITEMS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_ORDERS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_USERS_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_STAFF_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    }
+
+
+
+
+
+    /* Staff table methods */
+
+
+    // add staff member to db
+    public void addStaff(StaffMember staffMember) {
+
+        ContentValues vals = new ContentValues();
+        vals.put(STAFF_ID, staffMember.getStaffID());
+        vals.put(STAFF_PASSWORD, staffMember.getPassword());
+
+        database.insert(STAFF_TABLE_NAME, null, vals);
+    }
+
+
+    // delete staff member from db
+    public void deleteStaff(int id) {
+        int count = database.delete(STAFF_TABLE_NAME, "StaffID = ?", new String[] {String.valueOf(id)});
+    }
+
+
+    // fetch staff member info
+    public StaffMember loadStaff(int id, String password) {
+
+        Cursor cursor = database.query(
+                USERS_TABLE_NAME,
+                new String[] {STAFF_ID, STAFF_PASSWORD},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+
+                // finding desired staff member in the staff table
+                int staffID = cursor.getInt(0);
+                if (staffID == id) {
+
+                    // ensure the password is correct
+                    String p = cursor.getString(1);
+                    if (password.equals(p)) {
+                        return new StaffMember(staffID, p);
+                    }
+                }
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        return new StaffMember(-1, "");
     }
 
 
