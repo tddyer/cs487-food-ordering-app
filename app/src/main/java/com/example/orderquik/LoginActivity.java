@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signup(View v) {
-        userSignup();
+        userSignup(false);
     }
 
     public void guestLogin() {
@@ -199,7 +199,9 @@ public class LoginActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void userSignup() {
+    public void userSignup(boolean invalid) {
+
+
 
         LayoutInflater inflater = LayoutInflater.from(this);
         @SuppressLint("InflateParams")
@@ -209,14 +211,19 @@ public class LoginActivity extends AppCompatActivity {
         builder.setView(view);
         builder.setTitle("User Signup");
 
-        builder.setPositiveButton("Signup", (dialog, id) -> {
-            EditText em = view.findViewById(R.id.textEmail);
-            EditText password = view.findViewById(R.id.signupPassword);
-            EditText confirmPassword = view.findViewById(R.id.confirmPasswordEditText);
-            EditText address = view.findViewById(R.id.addressEdit);
-            EditText cardNo = view.findViewById(R.id.creditEdit);
+        EditText em = view.findViewById(R.id.textEmail);
+        EditText password = view.findViewById(R.id.signupPassword);
+        EditText confirmPassword = view.findViewById(R.id.confirmPasswordEditText);
+        EditText address = view.findViewById(R.id.addressEdit);
+        EditText cardNo = view.findViewById(R.id.creditEdit);
 
-            confirmPassword.addTextChangedListener(textWatcher);
+        if (invalid) {
+            Log.d("LOGINACTIVITY", "userSignup: INVALID PASSWRDS");
+            confirmPassword.setError("Error: passwords must match. Please try again.");
+        }
+
+
+        builder.setPositiveButton("Signup", (dialog, id) -> {
 
             String email;
             String pwrd;
@@ -231,18 +238,22 @@ public class LoginActivity extends AppCompatActivity {
                 addr = String.valueOf(address.getText());
                 card = String.valueOf(cardNo.getText());
 
-
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("ID", SIGNUP);
-                intent.putExtra("SIGNUP_EMAIL", email);
-                intent.putExtra("SIGNUP_PASSWORD", pwrd);
-                intent.putExtra("SIGNUP_ADDR", addr);
-                intent.putExtra("SIGNUP_CARD", card);
-                startActivity(intent);
+                if (confirmPwrd.equals(pwrd)) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("ID", SIGNUP);
+                    intent.putExtra("SIGNUP_EMAIL", email);
+                    intent.putExtra("SIGNUP_PASSWORD", pwrd);
+                    intent.putExtra("SIGNUP_ADDR", addr);
+                    intent.putExtra("SIGNUP_CARD", card);
+                    LoginActivity.this.startActivity(intent);
+                } else {
+                    Log.d("TAG", "userSignup: PASSWORDS DONT MATCH");
+                    LoginActivity.this.userSignup(true);
+                }
 
             } catch (NullPointerException npe) {
                 npe.printStackTrace();
-                userSignup(); // could re-display with some error message upon invalid login
+                LoginActivity.this.userSignup(true);
             }
 
         });

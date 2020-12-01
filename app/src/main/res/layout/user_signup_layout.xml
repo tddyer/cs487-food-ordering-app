@@ -84,7 +84,7 @@
         android:textAlignment="center"
         android:textSize="20sp"
         android:inputType="textPassword"
-        android:importantForAutofill="no" />
+        android:importantForAutofill="no"/>
 
     <TextView
         android:text="@string/delivery_address"
