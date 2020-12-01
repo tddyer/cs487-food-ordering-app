@@ -35,12 +35,12 @@ public class LoginActivity extends AppCompatActivity {
 //        this.deleteDatabase("OrderQuikDB");
 
 
-        /* ----------- USERS DATABASE TEST DATA CREATION + RETRIEVAL TESTING ----------- */
+        /* ----------- USERS + STAFF DATABASE TEST DATA CREATION + RETRIEVAL TESTING ----------- */
 
 
 //        // adding test users to database
-//        User u1 = new User("jsmith@gmail.com", "abc123", "3302 Yellow Rd, New York, NY, 10330", "2287349059230087", 200, "11-17 Cheeseburger, Salad, Gyros");
-//        User u2 = new User("loganb22@gmail.com", "loganb123", "441 State St, Boston, MA, 33409", "7763409867113643", 80, "10-22 Beef and Broccoli Stir-Fry, Salad");
+//        User u1 = new User("jsmith@gmail.com", "abc123", "3302 Yellow Rd, New York, NY, 10330", "2287349059230087", 200, "11/17/20 - Cheeseburger, Salad, Gyros");
+//        User u2 = new User("loganb22@gmail.com", "loganb123", "441 State St, Boston, MA, 33409", "7763409867113643", 80, "10/22/20 - Beef and Broccoli Stir-Fry, Salad");
 //        User u3 = new User("sashayarns@yahoo.com", "kittengirl!", "97431 Bluebird Ln, Austin, TX, 55609", "1103448967204789", 0, "");
 //
 //        databaseHandler.addUser(u1);
@@ -50,6 +50,19 @@ public class LoginActivity extends AppCompatActivity {
 //        // fetching user data test
 //        User temp = databaseHandler.loadUser("jsmith@gmail.com", "abc123");
 //        Log.d("LOGINACTIVITY", "onCreate: " + temp.getDeliveryAddress());
+//
+//        // adding test staff members to database
+//        StaffMember s1 = new StaffMember(1111, "abc123");
+//        StaffMember s2 = new StaffMember(1112, "funny01");
+//        StaffMember s3 = new StaffMember(1113, "johnnyb101");
+//
+//        databaseHandler.addStaff(s1);
+//        databaseHandler.addStaff(s2);
+//        databaseHandler.addStaff(s3);
+//
+//        // fetching staff data test
+//        StaffMember tempStaff = databaseHandler.loadStaff(1111, "abc123");
+//        Log.d("TAG", "onCreate: " + tempStaff.getStaffID() + ", " + tempStaff.getPassword());
     }
 
 
@@ -65,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
                 break;
             case R.id.staffLogin: // launch staff portal with valid staff credentials
                 // staff login
-                staffLogin();
+                staffLogin(false);
                 break;
             default:
                 // do nothing
@@ -135,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void staffLogin() {
+    public void staffLogin(boolean invalid) {
 
         LayoutInflater inflater = LayoutInflater.from(this);
         @SuppressLint("InflateParams")
@@ -145,9 +158,14 @@ public class LoginActivity extends AppCompatActivity {
         builder.setView(view);
         builder.setTitle("Staff Login");
 
+        EditText em = view.findViewById(R.id.textID);
+        EditText password = view.findViewById(R.id.textPassword);
+
+        if (invalid) {
+            em.setError("Invalid staff login credentials.");
+        }
+
         builder.setPositiveButton("Login", (dialog, id) -> {
-            EditText em = view.findViewById(R.id.textID);
-            EditText password = view.findViewById(R.id.textPassword);
 
             int staffID = -1;
             String pwrd;
@@ -158,18 +176,21 @@ public class LoginActivity extends AppCompatActivity {
 
                 pwrd = String.valueOf(password.getText());
 
-                if (staffID > -1) {
+                StaffMember staffMember = databaseHandler.loadStaff(staffID, pwrd);
+
+                // successful login
+                if (staffMember.getStaffID() > -1) {
                     Intent intent = new Intent(this, StaffPortal.class);
                     intent.putExtra("LOGIN_ID", staffID);
                     intent.putExtra("LOGIN_PASSWORD", pwrd);
                     startActivity(intent);
                 } else {
-                    throw new Exception();
+                    staffLogin(true);
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                staffLogin(); // could re-display with some error message upon invalid login
+                staffLogin(true);
             }
 
         });

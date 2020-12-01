@@ -133,7 +133,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public StaffMember loadStaff(int id, String password) {
 
         Cursor cursor = database.query(
-                USERS_TABLE_NAME,
+                STAFF_TABLE_NAME,
                 new String[] {STAFF_ID, STAFF_PASSWORD},
                 null,
                 null,
