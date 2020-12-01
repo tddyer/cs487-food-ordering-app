@@ -52,30 +52,6 @@ public class LoginActivity extends AppCompatActivity {
 //        Log.d("LOGINACTIVITY", "onCreate: " + temp.getDeliveryAddress());
     }
 
-    TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            Log.d("AFRTERTEXT", "afterTextChanged: CHECKING INPUT");
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            Log.d("AFRTERTEXT", "afterTextChanged: CHECKING INPUT");
-            EditText password = (EditText)  findViewById(R.id.signupPassword);
-            EditText confirm = (EditText) findViewById(R.id.confirmPasswordEditText);
-            String pwrd = String.valueOf(password.getText());
-            String toConfirm = String.valueOf(confirm.getText());
-
-            if (!pwrd.equals(toConfirm)) {
-                confirm.setError("Error: passwords must match.");
-            }
-        }
-    };
 
     @SuppressLint("NonConstantResourceId")
     public void login(View v) {
