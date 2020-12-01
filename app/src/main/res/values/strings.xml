@@ -16,4 +16,6 @@
     <string name="reward_points">Reward Points:</string>
     <string name="user_email">user email</string>
     <string name="user_password">user password</string>
+    <string name="first_time_user">First time user? Sign up </string>
+    <string name="sign_up_here"><u> here</u></string>
 </resources>
