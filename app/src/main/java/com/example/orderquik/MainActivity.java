@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         // getting login information to determine if a guest or user logged in
         bundle = getIntent().getExtras();
 
-        // user login
+        // user login or return from account activity
         if (bundle != null) {
             user = (User) bundle.getSerializable("USER_DATA");
             Log.d(TAG, "onCreate: " + user.getDeliveryAddress() + user.getCreditCardInfo());

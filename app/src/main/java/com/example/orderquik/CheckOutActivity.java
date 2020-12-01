@@ -174,10 +174,8 @@ public class CheckOutActivity extends AppCompatActivity{
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Your reward points is below 100. Can not use it at this point.");
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // do nothing
-            }
+        builder.setPositiveButton("OK", (dialog, id) -> {
+            // do nothing
         });
 
         AlertDialog dialog = builder.create();
@@ -200,10 +198,8 @@ public class CheckOutActivity extends AppCompatActivity{
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Please check only one option");
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // do nothing
-            }
+        builder.setPositiveButton("OK", (dialog, id) -> {
+            // do nothing
         });
 
         AlertDialog dialog = builder.create();
@@ -222,18 +218,8 @@ public class CheckOutActivity extends AppCompatActivity{
             user.setRewardPoints(AddRewardPoints);
         }
 
-        builder.setPositiveButton("START", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                optionalSurvey();
-
-            }
-        });
-        builder.setNegativeButton("SKIP", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // TODO: go to the account page, and customers can view the expected time of order
-                viewAccount();
-            }
-        });
+        builder.setPositiveButton("START", (dialog, id) -> optionalSurvey());
+        builder.setNegativeButton("SKIP", (dialog, id) -> viewAccount());
 
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -243,17 +229,13 @@ public class CheckOutActivity extends AppCompatActivity{
         final CharSequence[] menu = MainActivity.foodNames;
         AlertDialog.Builder bd = new AlertDialog.Builder(this);
         bd.setTitle("Please choose the best dish");
-        bd.setSingleChoiceItems(menu, -1, new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int index){
-                // TODO: save the survey response
-            }
+        bd.setSingleChoiceItems(menu, -1, (dialog, index) -> {
+            // TODO: save the survey response
         });
 
-        bd.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-               // TODO: go to the account page, and customers can view the expected time of order
-                viewAccount();
-            }
+        bd.setPositiveButton("Done", (dialog, id) -> {
+           // TODO: go to the account page, and customers can view the expected time of order
+            viewAccount();
         });
 
         AlertDialog dialog = bd.create();

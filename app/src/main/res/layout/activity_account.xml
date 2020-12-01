@@ -16,26 +16,28 @@
 
             <TextView
                 android:id="@+id/creditCardInfo"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/creditcardInfoText"
                 app:layout_constraintTop_toBottomOf="@+id/orderHistory" />
 
             <TextView
                 android:id="@+id/userEmail"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="20dp"
                 android:gravity="start"
                 android:text="@string/user_email"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintStart_toEndOf="@+id/userEmailText"
                 app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
@@ -53,12 +55,13 @@
 
             <TextView
                 android:id="@+id/orderHistory"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="20dp"
                 android:textSize="14sp"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/orderHistoryText"
                 app:layout_constraintTop_toBottomOf="@+id/userRewardPoints" />
@@ -72,6 +75,7 @@
                 android:gravity="start"
                 android:text="@string/userpassword"
                 android:textSize="14sp"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/userEmailText" />
 
@@ -100,15 +104,16 @@
 
             <TextView
                 android:id="@+id/userPassword"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="20dp"
                 android:gravity="start"
                 android:password="true"
                 android:text="@string/user_password"
                 android:textSize="14sp"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/userPasswordText"
                 app:layout_constraintTop_toBottomOf="@+id/userEmail" />
@@ -139,11 +144,12 @@
 
             <TextView
                 android:id="@+id/deliveryAddress"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/deliveryAddressText"
                 app:layout_constraintTop_toBottomOf="@+id/creditCardInfo" />
@@ -162,13 +168,14 @@
 
             <TextView
                 android:id="@+id/userRewardPoints"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="20dp"
                 android:gravity="start"
                 android:textSize="14sp"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/userRewardPointsText"
                 app:layout_constraintTop_toBottomOf="@+id/userPassword" />

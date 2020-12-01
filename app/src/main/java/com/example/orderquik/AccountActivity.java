@@ -125,15 +125,38 @@ public class AccountActivity extends AppCompatActivity {
         if(getIntent().hasExtra("done Order_order history")){
             long now = System.currentTimeMillis();
             Date mDate = new Date(now);
-            SimpleDateFormat simpleDate = new SimpleDateFormat("MM-dd");
+            SimpleDateFormat simpleDate = new SimpleDateFormat("MM/dd/yy");
             String getTime = simpleDate.format(mDate);
 
             tmp = (ArrayList<CheckoutItem>) getIntent().getSerializableExtra("done Order_order history");
 
             String ohTMP = String.valueOf(orderHistory.getText());
-            orderHistory.setText(ohTMP+"\n"+getTime+" "+ tmp.get(0).getCoName());
+
+            // 1: delete old user entry
+            databaseHandler.deleteUser(UserTMP.getEmail());
+
+            // 2: update user's most recent order
+            StringBuilder sb = new StringBuilder();
+            sb.append(UserTMP.getOrderHistory());
+            sb.append("\n\n" + getTime + " - ");
+            for (CheckoutItem i: tmp) {
+                if (i.getItemTotal() > 1) {
+                    sb.append(i.getCoName() + " (x" + i.getItemTotal() + "), ");
+                } else {
+                    sb.append(i.getCoName() + ", ");
+                }
+            }
+
+            sb.deleteCharAt(sb.lastIndexOf(","));
+            orderHistory.setText(sb.toString());
+            UserTMP.setOrderHistory(sb.toString());
+
+            // 3: update database with new user values
+            databaseHandler.addUser(UserTMP);
 
         }
+
+
 
     }
     //update information
@@ -206,10 +229,8 @@ public class AccountActivity extends AppCompatActivity {
         builder.setTitle("The expected time of order");
         builder.setMessage("Your order will be ready in 30 minutes");
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // do nothing
-            }
+        builder.setPositiveButton("OK", (dialog, id) -> {
+            // do nothing
         });
 
         AlertDialog dialog = builder.create();
@@ -223,7 +244,7 @@ public class AccountActivity extends AppCompatActivity {
         }else{
             super.onBackPressed();
             Intent it = new Intent(this, MainActivity.class);
-            it.putExtra("AccountPageToCheckoutPage", (Serializable) UserTMP);
+            it.putExtra("USER_DATA", (Serializable) UserTMP);
             startActivity(it);
         }
 
