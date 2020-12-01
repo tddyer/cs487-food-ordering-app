@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.userLogin: // launch main activity with login_id as entered email and password
                 // account login
-                userLogin();
+                userLogin(false);
                 break;
             case R.id.guestLogin: // launch main activity without login info
                 guestLogin();
@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void userLogin() {
+    public void userLogin(boolean invalid) {
 
         LayoutInflater inflater = LayoutInflater.from(this);
         @SuppressLint("InflateParams")
@@ -120,10 +120,14 @@ public class LoginActivity extends AppCompatActivity {
         builder.setView(view);
         builder.setTitle("User Login");
 
-        builder.setPositiveButton("Login", (dialog, id) -> {
-            EditText em = view.findViewById(R.id.textEmail);
-            EditText password = view.findViewById(R.id.textPassword);
+        EditText em = view.findViewById(R.id.textEmail);
+        EditText password = view.findViewById(R.id.textPassword);
 
+        if (invalid) {
+            em.setError("There is no registered account for the provided email/password. Please try again.");
+        }
+
+        builder.setPositiveButton("Login", (dialog, id) -> {
             String email;
             String pwrd;
 
@@ -131,15 +135,23 @@ public class LoginActivity extends AppCompatActivity {
                 email = String.valueOf(em.getText());
                 pwrd = String.valueOf(password.getText());
 
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("ID", LOGIN);
-                intent.putExtra("LOGIN_EMAIL", email);
-                intent.putExtra("LOGIN_PASSWORD", pwrd);
-                startActivity(intent);
+                User user = databaseHandler.loadUser(email, pwrd);
+
+                if (user.getEmail().equals(email)) {
+
+                    // successful login
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("ID", LOGIN);
+                    intent.putExtra("LOGIN_EMAIL", email);
+                    intent.putExtra("LOGIN_PASSWORD", pwrd);
+                    startActivity(intent);
+                } else {
+                    userLogin(true);
+                }
 
             } catch (NullPointerException npe) {
                 npe.printStackTrace();
-                userLogin(); // could re-display with some error message upon invalid login
+                userLogin(true); // could re-display with some error message upon invalid login
             }
 
         });
@@ -200,8 +212,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void userSignup(boolean invalid) {
-
-
 
         LayoutInflater inflater = LayoutInflater.from(this);
         @SuppressLint("InflateParams")
