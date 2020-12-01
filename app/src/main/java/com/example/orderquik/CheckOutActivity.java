@@ -158,7 +158,7 @@ public class CheckOutActivity extends AppCompatActivity{
             addOrderToDB(); // saving order to database
 
             totalAmount = totalAmount-Math.floor(rewardPointsTMP/100);
-            rewardPointsTMP = (int) (rewardPointsTMP - Math.floor(rewardPointsTMP/100));
+            rewardPointsTMP = (int) (rewardPointsTMP - Math.floor(rewardPointsTMP/100)*100); //&&&&
             user.setRewardPoints(rewardPointsTMP);
             optionalSurveyAlert();
 
@@ -213,18 +213,27 @@ public class CheckOutActivity extends AppCompatActivity{
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Optional Survey");
 
+        if(user.getEmail().isEmpty() || user.getEmail().equals("") || user.getEmail().equals("null")){
+            //optionalSurvey();
+        }else{
+            //if they use their accounts, they will also get rewards points, 2points per dollar spent
+            double tmp = Math.floor(totalAmount);
+            int AddRewardPoints = ((int) tmp)*2+rewardPointsTMP;
+            user.setRewardPoints(AddRewardPoints);
+        }
+
         builder.setPositiveButton("START", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
-                if(user.getEmail().isEmpty() || user.getEmail().equals("") || user.getEmail().equals("null")){
-                    optionalSurvey();
-                }else{
-                    //if they use their accounts, they will also get rewards points, 2points per dollar spent
-                    double tmp = Math.floor(totalAmount);
-                    int AddRewardPoints = ((int) tmp)*2;
-                    userRewardPoints.setText(String.valueOf(rewardPointsTMP+AddRewardPoints));
-                    optionalSurvey();
-                }
+                optionalSurvey();
+//                if(user.getEmail().isEmpty() || user.getEmail().equals("") || user.getEmail().equals("null")){
+//                    optionalSurvey();
+//                }else{
+//                    //if they use their accounts, they will also get rewards points, 2points per dollar spent
+//                    double tmp = Math.floor(totalAmount);
+//                    int AddRewardPoints = ((int) tmp)*2;
+//                    userRewardPoints.setText(String.valueOf(rewardPointsTMP+AddRewardPoints));
+//                    optionalSurvey();
+//                }
 
             }
         });
