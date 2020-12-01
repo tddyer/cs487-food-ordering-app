@@ -101,9 +101,44 @@ public class MainActivity extends AppCompatActivity
 
         // user login
         if (bundle != null) {
-            String email = bundle.getString("LOGIN_EMAIL");
-            String pwrd = bundle.getString("LOGIN_PASSWORD");
-            user = new User(email, pwrd);
+
+            String email;
+            String pwrd;
+            String address;
+            String cardNo;
+            int rewardPoints;
+            String lastOrder;
+
+            int id = bundle.getInt("ID");
+
+            if (id == LoginActivity.LOGIN) {
+                email = bundle.getString("LOGIN_EMAIL");
+                pwrd = bundle.getString("LOGIN_PASSWORD");
+
+                Log.d(TAG, "onCreate: EXISTING USER LOGIN: " + email + ", " + pwrd);
+
+
+                // TODO: fetch user login info from db here (addr, cardNo, rewardPoints, lastOrder)
+
+
+                user = new User(email, pwrd);
+            } else if (id == LoginActivity.SIGNUP) {
+                email = bundle.getString("SIGNUP_EMAIL");
+                pwrd = bundle.getString("SIGNUP_PASSWORD");
+                address = bundle.getString("SIGNUP_ADDR");
+                cardNo = bundle.getString("SIGNUP_CARD");
+                rewardPoints = 0;
+                lastOrder = "";
+
+                Log.d(TAG, "onCreate: NEW USER SIGNUP: " + email + ", " + pwrd + ", " + address + ", " + cardNo);
+
+                user = new User(email, pwrd, rewardPoints, lastOrder, address, cardNo);
+
+
+                // TODO: write user info to db as a new user
+
+
+            }
 
         } else {
             // guest login

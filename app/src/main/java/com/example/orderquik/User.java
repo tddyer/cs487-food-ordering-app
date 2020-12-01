@@ -23,6 +23,15 @@ public class User implements Serializable {
         this.deliveryAddress = "3241 S Wabash Ave, Chicago, IL 60616, United States";
     }
 
+    public User(String email, String password, int points, String lastOrder, String addr, String card) {
+        this.email = email;
+        this.password = password;
+        this.rewardPoints = points;
+        this.orderHistory = lastOrder;
+        this.deliveryAddress = addr;
+        this.creditCardInfo = card;
+    }
+
     public String getEmail() {
         return email;
     }
