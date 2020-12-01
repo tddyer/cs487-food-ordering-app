@@ -1,21 +1,34 @@
 package com.example.orderquik;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 
 public class AccountActivity extends AppCompatActivity {
     public User UserTMP;
+    private ArrayList<CheckoutItem> tmp = new ArrayList<>();
+
     public TextView userEmail;public TextView userEmailText;
     public TextView userPW;public TextView userPWText;
     public TextView userRewardsPoints;public TextView userRewardsPointsText;
@@ -26,6 +39,7 @@ public class AccountActivity extends AppCompatActivity {
 
     public TextView userAccountText;
     public Button readyTimeBTN;
+    public Button updateBTN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +58,7 @@ public class AccountActivity extends AppCompatActivity {
 
         userAccountText = findViewById(R.id.userTextview);
         readyTimeBTN = findViewById(R.id.readyTimeBTN);
+        updateBTN = findViewById(R.id.updateBTN);
 
 
         if(getIntent().hasExtra("UserInFo")){
@@ -51,7 +66,7 @@ public class AccountActivity extends AppCompatActivity {
             String getEMAIL = UserTMP.getEmail();
 
             if(getEMAIL.isEmpty() || getEMAIL.equals("") || getEMAIL.equals("null")){
-                //If guest logined
+                //guest
                 userEmail.setVisibility(View.INVISIBLE);userEmailText.setVisibility(View.INVISIBLE);
                 userPW.setVisibility(View.INVISIBLE);userPWText.setVisibility(View.INVISIBLE);
                 userRewardsPoints.setVisibility(View.INVISIBLE);
@@ -60,13 +75,17 @@ public class AccountActivity extends AppCompatActivity {
                 creditCardInfo.setVisibility(View.INVISIBLE);creditCardInfoText.setVisibility(View.INVISIBLE);
                 deliveryAddress.setVisibility(View.INVISIBLE);
                 deliveryAddressText.setVisibility(View.INVISIBLE);
+                updateBTN.setVisibility(View.INVISIBLE);
 
                 userAccountText.setText("GUEST");
             }else{
-                //If user logined
+                //user
                 userEmail.setText(UserTMP.getEmail());
                 userPW.setText(UserTMP.getPassword());
                 userRewardsPoints.setText(String.valueOf(UserTMP.getRewardPoints()));
+                orderHistory.setText(UserTMP.getOrderHistory());
+                creditCardInfo.setText(UserTMP.getCreditCardInfo());
+                deliveryAddress.setText(UserTMP.getDeliveryAddress());
             }
         }
 
@@ -75,7 +94,7 @@ public class AccountActivity extends AppCompatActivity {
             String getEMAIL = UserTMP.getEmail();
 
             if(getEMAIL.isEmpty() || getEMAIL.equals("") || getEMAIL.equals("null")){
-                //If guest logined
+                //guest
                 userEmail.setVisibility(View.INVISIBLE);userEmailText.setVisibility(View.INVISIBLE);
                 userPW.setVisibility(View.INVISIBLE);userPWText.setVisibility(View.INVISIBLE);
                 userRewardsPoints.setVisibility(View.INVISIBLE);
@@ -84,26 +103,104 @@ public class AccountActivity extends AppCompatActivity {
                 creditCardInfo.setVisibility(View.INVISIBLE);creditCardInfoText.setVisibility(View.INVISIBLE);
                 deliveryAddress.setVisibility(View.INVISIBLE);
                 deliveryAddressText.setVisibility(View.INVISIBLE);
+                updateBTN.setVisibility(View.INVISIBLE);
 
                 userAccountText.setText("GUEST");
 
             }else{
-                //If user logined
+                //user
                 userEmail.setText(UserTMP.getEmail());
                 userPW.setText(UserTMP.getPassword());
                 userRewardsPoints.setText(String.valueOf(UserTMP.getRewardPoints()));
-
+                orderHistory.setText(UserTMP.getOrderHistory());
+                creditCardInfo.setText(UserTMP.getCreditCardInfo());
+                deliveryAddress.setText(UserTMP.getDeliveryAddress());
             }
+
+        }
+        if(getIntent().hasExtra("done Order_order history")){
+            long now = System.currentTimeMillis();
+            Date mDate = new Date(now);
+            SimpleDateFormat simpleDate = new SimpleDateFormat("MM-dd");
+            String getTime = simpleDate.format(mDate);
+
+            tmp = (ArrayList<CheckoutItem>) getIntent().getSerializableExtra("done Order_order history");
+
+            String ohTMP = String.valueOf(orderHistory.getText());
+            orderHistory.setText(ohTMP+"\n"+getTime+" "+ tmp.get(0).getCoName());
 
         }
 
     }
+    //update information
+    public void updateBTNclicked(View view){
+        final String[] tmp = new String[1];
+
+        final String[] update = {"Password","Credit Card Info", "Delivery Address"};
+        AlertDialog.Builder bd = new AlertDialog.Builder(this);
+        bd.setTitle("Update");
+        bd.setSingleChoiceItems(update, -1, new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int index){
+                tmp[0] = update[index];
+            }
+        });
+
+        bd.setPositiveButton("update", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                viewUpdateAlert(tmp[0]);
+            }
+        });
+        bd.setNegativeButton("Cancel", (dialog, id) -> {
+            // do nothing
+        });
+        AlertDialog dialog = bd.create();
+        dialog.show();
+    }
+    
+    public void viewUpdateAlert(String tmp){
+        final EditText txtEdit = new EditText(AccountActivity.this);
+
+        android.app.AlertDialog.Builder alertBuilder = new android.app.AlertDialog.Builder(this);
+        alertBuilder.setTitle("Update "+tmp);
+        alertBuilder.setView(txtEdit);
+
+        alertBuilder.setPositiveButton("update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String updateTMP = txtEdit.getText().toString();
+
+                if(tmp.equals("Password")){
+                    UserTMP.setPassword(updateTMP);
+                    userPW.setText(updateTMP);
+
+                }else if(tmp.equals("Credit Card Info")){
+                    UserTMP.setCreditCardInfo(updateTMP);
+                    creditCardInfo.setText(updateTMP);
+
+                }else{
+                    UserTMP.setDeliveryAddress(updateTMP);
+                    deliveryAddress.setText(updateTMP);
+                }
+
+            }
+        });
+        alertBuilder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        });
+
+        alertBuilder.show();
+        return;
+    }
+
     //view the expected time of order
     public void readytimdBTNclicked(View view){
         if(getIntent().hasExtra("done Order")){
             viewReadyTime();
         }else{
-            orderAlert();
+            Toast.makeText(this, "The order has not been completed yet.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -121,26 +218,16 @@ public class AccountActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-    public void orderAlert(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("The order has not yet been completed.");
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // do nothing
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
 
     @Override
     public void onBackPressed() {
         if(getIntent().hasExtra("done Order")){
-            //super.onBackPressed();
+            Toast.makeText(this, "Your order has been completed.", Toast.LENGTH_SHORT).show();
         }else{
             super.onBackPressed();
+            Intent it = new Intent(this, MainActivity.class);
+            it.putExtra("AccountPageToCheckoutPage", (Serializable) UserTMP);
+            startActivity(it);
         }
 
     }
