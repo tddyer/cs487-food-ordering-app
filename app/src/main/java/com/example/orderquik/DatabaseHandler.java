@@ -42,10 +42,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String ACTIVE_ORDER_ITEM_COUNT = "ItemCount";
 
     private static final String SQL_CREATE_ACTIVE_ORDERS_TABLE =
-            "CREATE TABLE " + ACTIVE_ORDERS_TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + ACTIVE_ORDERS_TABLE_NAME + " (" +
                     ACTIVE_ORDER_ID + " INTEGER," +
                     ACTIVE_ORDER_ITEM + " TEXT," +
                     ACTIVE_ORDER_ITEM_COUNT + " INTEGER, PRIMARY KEY (ActiveOrderID, ItemName))";
+
+
+    // Users tabls vars + creation string
+    private static final String USERS_TABLE_NAME = "Users";
+
+    private static final String USER_EMAIL = "Email";
+    private static final String USER_PASSWORD = "Password";
+    private static final String USER_ADDRESS = "Address";
+    private static final String USER_CARD_NO = "CardNumber";
+    private static final String USER_REWARD_POINTS = "RewardPoints";
+    private static final String USER_LAST_ORDER = "LastOrder";
+
+    private static final String SQL_CREATE_USERS_TABLE =
+            "CREATE TABLE IF NOT EXISTS " + USERS_TABLE_NAME + " (" +
+                    USER_EMAIL + " TEXT," +
+                    USER_PASSWORD + " TEXT," +
+                    USER_ADDRESS + " TEXT," +
+                    USER_CARD_NO + " TEXT," +
+                    USER_REWARD_POINTS + " INTEGER," +
+                    USER_LAST_ORDER + " TEXT, PRIMARY KEY (Email))";
 
 
     public DatabaseHandler(Context context) {
@@ -64,11 +84,79 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // create any tables here
         sqLiteDatabase.execSQL(SQL_CREATE_MENU_ITEMS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_ORDERS_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_USERS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    }
+
+
+
+    /* Users table methods */
+
+
+    // add user to db
+    public void addUser(User user) {
+
+        ContentValues vals = new ContentValues();
+        vals.put(USER_EMAIL, user.getEmail());
+        vals.put(USER_PASSWORD, user.getPassword());
+        vals.put(USER_ADDRESS, user.getDeliveryAddress());
+        vals.put(USER_CARD_NO, user.getCreditCardInfo());
+        vals.put(USER_REWARD_POINTS, user.getRewardPoints());
+        vals.put(USER_LAST_ORDER, user.getOrderHistory());
+
+        database.insert(USERS_TABLE_NAME, null, vals);
+    }
+
+    // delete user from db
+    public void deleteUser(String email) {
+        int count = database.delete(USERS_TABLE_NAME, "Email = ?", new String[] {email});
+    }
+
+    // delete all users from db
+    public void flushUsers() {
+        database.execSQL(String.format("DELETE FROM %s;", USERS_TABLE_NAME));
+    }
+
+    // fetch user info
+    public User loadUser(String email, String password) {
+
+        Cursor cursor = database.query(
+                USERS_TABLE_NAME,
+                new String[] {USER_EMAIL, USER_PASSWORD, USER_ADDRESS, USER_CARD_NO, USER_REWARD_POINTS, USER_LAST_ORDER},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+
+                // finding desired user in the users table
+                String e = cursor.getString(0);
+                if (e.equals(email)) {
+
+                    // ensure the password is correct
+                    String p = cursor.getString(1);
+                    if (password.equals(p)) {
+                        String addr = cursor.getString(2);
+                        String card = cursor.getString(3);
+                        int points = cursor.getInt(4);
+                        String lastOrder = cursor.getString(5);
+                        return new User(e, p, addr, card, points, lastOrder);
+                    }
+                }
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        return new User();
     }
 
 

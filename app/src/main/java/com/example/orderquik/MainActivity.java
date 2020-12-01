@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity
 
                 Log.d(TAG, "onCreate: NEW USER SIGNUP: " + email + ", " + pwrd + ", " + address + ", " + cardNo);
 
-                user = new User(email, pwrd, rewardPoints, lastOrder, address, cardNo);
+                user = new User(email, pwrd, address, cardNo, rewardPoints, lastOrder);
 
 
                 // TODO: write user info to db as a new user

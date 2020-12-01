@@ -25,10 +25,34 @@ public class LoginActivity extends AppCompatActivity {
     public static final int LOGIN = 1;
     public static final int SIGNUP = 2;
 
+    private DatabaseHandler databaseHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        databaseHandler = new DatabaseHandler(this);
+
+        // refreshing database
+//        this.deleteDatabase("OrderQuikDB");
+
+
+        /* ----------- USERS DATABASE TEST DATA CREATION + RETRIEVAL TESTING ----------- */
+
+
+//        // adding test users to database
+//        User u1 = new User("jsmith@gmail.com", "abc123", "3302 Yellow Rd, New York, NY, 10330", "2287349059230087", 200, "11-17 Cheeseburger, Salad, Gyros");
+//        User u2 = new User("loganb22@gmail.com", "loganb123", "441 State St, Boston, MA, 33409", "7763409867113643", 80, "10-22 Beef and Broccoli Stir-Fry, Salad");
+//        User u3 = new User("sashayarns@yahoo.com", "kittengirl!", "97431 Bluebird Ln, Austin, TX, 55609", "1103448967204789", 0, "");
+//
+//        databaseHandler.addUser(u1);
+//        databaseHandler.addUser(u2);
+//        databaseHandler.addUser(u3);
+//
+//        // fetching user data test
+//        User temp = databaseHandler.loadUser("jsmith@gmail.com", "abc123");
+//        Log.d("LOGINACTIVITY", "onCreate: " + temp.getDeliveryAddress());
     }
 
     TextWatcher textWatcher = new TextWatcher() {
