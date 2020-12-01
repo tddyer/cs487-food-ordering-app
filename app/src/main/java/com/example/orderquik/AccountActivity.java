@@ -43,6 +43,8 @@ public class AccountActivity extends AppCompatActivity {
 
     private DatabaseHandler databaseHandler;
 
+    String orderCompletionTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -125,12 +127,26 @@ public class AccountActivity extends AppCompatActivity {
         if(getIntent().hasExtra("done Order_order history")){
             long now = System.currentTimeMillis();
             Date mDate = new Date(now);
+
             SimpleDateFormat simpleDate = new SimpleDateFormat("MM/dd/yy");
             String getTime = simpleDate.format(mDate);
 
             tmp = (ArrayList<CheckoutItem>) getIntent().getSerializableExtra("done Order_order history");
 
             String ohTMP = String.valueOf(orderHistory.getText());
+
+            // estimating order completion time in ms
+            int items = 0;
+
+            for (CheckoutItem item : tmp) {
+                for (int j = 0; j < item.getItemTotal(); j++)
+                    items++;
+            }
+
+            int estimatedTime = (15 + (items*5)) * 60000;
+            Date nDate = new Date(now + estimatedTime);
+            SimpleDateFormat timeCompletion = new SimpleDateFormat("h:mm a");
+            orderCompletionTime = timeCompletion.format(nDate);
 
             // 1: delete old user entry
             databaseHandler.deleteUser(UserTMP.getEmail());
@@ -227,7 +243,7 @@ public class AccountActivity extends AppCompatActivity {
     public void viewReadyTime(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("The expected time of order");
-        builder.setMessage("Your order will be ready in 30 minutes");
+        builder.setMessage("Your estimated order completion time is " + orderCompletionTime);
 
         builder.setPositiveButton("OK", (dialog, id) -> {
             // do nothing
