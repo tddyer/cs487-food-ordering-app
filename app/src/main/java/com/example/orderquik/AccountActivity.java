@@ -282,6 +282,12 @@ public class AccountActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
+
+        if (item.getItemId() == R.id.menuLink) {
+            Intent it = new Intent(this, MainActivity.class);
+            it.putExtra("USER_DATA", (Serializable) UserTMP);
+            startActivity(it);
+        }
         return super.onOptionsItemSelected(item);
     }
 

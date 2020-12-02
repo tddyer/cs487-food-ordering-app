@@ -1,6 +1,7 @@
 package com.example.orderquik;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,15 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ActiveOrdersAdapter extends RecyclerView.Adapter<ActiveOrdersViewHolder> {
 
     private ArrayList<ArrayList<CheckoutItem>> orders; // list of orders (which are lists of items)
     private StaffPortal staffPortal;
+    HashMap<ArrayList<CheckoutItem>, Integer> orderIDs;
 
-    ActiveOrdersAdapter(ArrayList<ArrayList<CheckoutItem>> orders, StaffPortal sp) {
+    ActiveOrdersAdapter(ArrayList<ArrayList<CheckoutItem>> orders, HashMap<ArrayList<CheckoutItem>, Integer> orderIDs, StaffPortal sp) {
         this.orders = orders;
+        this.orderIDs = orderIDs;
         this.staffPortal = sp;
     }
 
@@ -49,7 +54,8 @@ public class ActiveOrdersAdapter extends RecyclerView.Adapter<ActiveOrdersViewHo
             }
         }
 
-        holder.orderTitle.setText(String.format("#%d", position));
+        int idStr = orderIDs.get(order);
+        holder.orderTitle.setText("Order #" + Integer.toString(idStr));
         holder.itemNames.setText(currentOrderNames);
     }
 

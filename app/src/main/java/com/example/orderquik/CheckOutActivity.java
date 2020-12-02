@@ -1,5 +1,6 @@
 package com.example.orderquik;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -47,6 +48,7 @@ public class CheckOutActivity extends AppCompatActivity{
 
     private DatabaseHandler databaseHandler;
 
+    @SuppressLint("DefaultLocale")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -102,7 +104,7 @@ public class CheckOutActivity extends AppCompatActivity{
             }
         }
 
-        total.setText("Total: $"+totalAmount.toString());
+        total.setText(String.format("Total: $%.2f", totalAmount));
         checkoutRecycler = findViewById(R.id.checkoutRecycler);
         checkoutItemsAdapter = new CheckoutItemsAdapter(checkoutItems, this);
         checkoutRecycler.setAdapter(checkoutItemsAdapter);
@@ -136,7 +138,7 @@ public class CheckOutActivity extends AppCompatActivity{
     public void checkoutAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Check out Alert");
-        builder.setMessage("Your reward points are not applied. Total: $"+totalAmount);
+        builder.setMessage(String.format("Your reward points are not applied. Total: $%.2f", totalAmount));
 
         builder.setPositiveButton("OK", (dialog, id) -> {
             addOrderToDB(); // saving order to database
@@ -151,7 +153,7 @@ public class CheckOutActivity extends AppCompatActivity{
     public void rewardPointsAppliedAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Check out Alert");
-        builder.setMessage("Your reward points are applied. Total: $"+(totalAmount-rewardPointsTMP/100));
+        builder.setMessage(String.format("Your reward points are applied. Total: $%.2f", totalAmount - rewardPointsTMP / 100));
 
         builder.setPositiveButton("OK", (dialog, id) -> {
 

@@ -307,10 +307,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 null
         );
 
-        int id = cursor.getCount() + 1;
+
+        int maxId = -1;
+
+        cursor.moveToFirst();
+        for (int i = 0; i < cursor.getCount(); i++) {
+            int id = cursor.getInt(0);
+            if (id > maxId)
+                maxId = id;
+            cursor.moveToNext();
+        }
         cursor.close();
 
-        return id;
+        return maxId + 1;
     }
 
     // add active order to db
@@ -329,7 +338,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // delete active order from db
-    public void deleteItem(int id) {
+    public void deleteOrder(int id) {
         int count = database.delete(ACTIVE_ORDERS_TABLE_NAME, "ActiveOrderID = ?", new String[] {String.valueOf(id)});
     }
 
@@ -368,11 +377,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     // update to new order id and empty old order
                     currID = id;
                     currOrder = new ArrayList<>();
-                } else if (i == cursor.getCount() - 1)
-                    orders.add(new Order(currID, currOrder));
+                }
 
                 CheckoutItem item = new CheckoutItem(name, 0.0, count);
                 currOrder.add(item);
+
+                if (i == cursor.getCount() - 1)
+                    orders.add(new Order(currID, currOrder));
 
                 cursor.moveToNext();
             }

@@ -13,6 +13,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class StaffPortal extends AppCompatActivity
     implements View.OnClickListener, View.OnLongClickListener {
@@ -23,6 +24,7 @@ public class StaffPortal extends AppCompatActivity
     private ArrayList<ArrayList<CheckoutItem>> orders = new ArrayList<>();
     private ArrayList<HashMap<String, Integer>> itemRatings = new ArrayList<>();
     private ArrayList<Order> databaseOrders = new ArrayList<>();
+    private HashMap<ArrayList<CheckoutItem>, Integer> orderIDs = new HashMap<>();
 
     private RecyclerView activeOrdersRecycler;
     private ActiveOrdersAdapter activeOrdersAdapter;
@@ -49,7 +51,7 @@ public class StaffPortal extends AppCompatActivity
 
         // active orders recycler setup
         activeOrdersRecycler = findViewById(R.id.activeOrdersRecycler);
-        activeOrdersAdapter = new ActiveOrdersAdapter(orders, this);
+        activeOrdersAdapter = new ActiveOrdersAdapter(orders, orderIDs, this);
 
         activeOrdersRecycler.setAdapter(activeOrdersAdapter);
         activeOrdersRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -67,63 +69,18 @@ public class StaffPortal extends AppCompatActivity
         databaseHandler = new DatabaseHandler(this);
 
 
-
-        // filling active orders with test data
-        //  - this would come from a database containing the current active orders normally
-        for (int i = 0; i < 5; i++) {
-            ArrayList<CheckoutItem> order = new ArrayList<>();
-            switch (i) {
-                case 0:
-                    order.add(new CheckoutItem("Cheeseburger", 9.99, 2));
-                    order.add(new CheckoutItem("Spaghetti and Meatballs", 12.99, 1));
-                    order.add(new CheckoutItem("Steak", 21.99, 1));
-                    order.add(new CheckoutItem("Soda", 3.99, 4));
-                    break;
-                case 1:
-                    order.add(new CheckoutItem("Mac & Cheese", 9.99, 1));
-                    order.add(new CheckoutItem("Lasagna", 10.99, 1));
-                    order.add(new CheckoutItem("Water", 0.99, 2));
-                    break;
-                case 2:
-                    order.add(new CheckoutItem("Cheeseburger", 9.99, 3));
-                    order.add(new CheckoutItem("Soda", 3.99, 2));
-                    order.add(new CheckoutItem("Water", 0.99, 1));
-                    break;
-                case 3:
-                    order.add(new CheckoutItem("Lemon Baked Cod", 13.99, 1));
-                    order.add(new CheckoutItem("Sweet & Sour Chicken", 11.99, 1));
-                    order.add(new CheckoutItem("Beef and Broccoli Stir-fry", 13.99, 1));
-                    order.add(new CheckoutItem("Soda", 3.99, 1));
-                    order.add(new CheckoutItem("Sweet Tea", 4.99, 1));
-                    order.add(new CheckoutItem("Water", 0.99, 1));
-                    break;
-                case 4:
-                    order.add(new CheckoutItem("Gyros", 14.99, 1));
-                    order.add(new CheckoutItem("Cheeseburger", 9.99, 2));
-                    order.add(new CheckoutItem("Chicken Fried Rice", 9.99, 1));
-                    order.add(new CheckoutItem("Water", 0.99, 3));
-                    break;
-            }
-
-            orders.add(order);
-        }
-
-
-        // populating active orders table with some filler data
-        if (!databaseHandler.tableExists("ActiveOrders")) {
-            for (ArrayList<CheckoutItem> order : orders) {
-                databaseHandler.addActiveOrder(order);
-            }
-        }
-
-
         // fetching active orders from database
         databaseOrders = databaseHandler.loadActiveOrders();
+
+        for (Order o : databaseOrders)
+            Log.d("PORAL", "onCreate: " + o.getItems());
 
         orders.clear();
         for (Order o : databaseOrders) {
             orders.add(o.getItems());
+            orderIDs.put(o.getItems(), o.getId());
         }
+
 
         activeOrdersAdapter.notifyDataSetChanged();
 
@@ -161,6 +118,8 @@ public class StaffPortal extends AppCompatActivity
 
     public void completeOrder(int pos) {
         if (!orders.isEmpty()) {
+            databaseHandler.deleteOrder(orderIDs.get(orders.get(pos)));
+            orderIDs.remove(orders.get(pos));
             orders.remove(pos);
             activeOrdersAdapter.notifyDataSetChanged();
         }
@@ -174,7 +133,6 @@ public class StaffPortal extends AppCompatActivity
 
     @Override
     public boolean onLongClick(View view) {
-        Log.d("HERE", "onLongClick: ");
         int pos = activeOrdersRecycler.getChildLayoutPosition(view);
         confirmOrderCompletion(pos);
         return true;
