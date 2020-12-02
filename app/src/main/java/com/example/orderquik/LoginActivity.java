@@ -29,36 +29,36 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        databaseHandler = new DatabaseHandler(this);
-
-        // refreshing database
+        // UNCOMMENT THE LINE BELOW IF YOU WANT TO REFRESH THE APPS DATABASE TO DEFAULT (no active orders, 3 test users, 3 staff members)
 //        this.deleteDatabase("OrderQuikDB");
+
+        databaseHandler = new DatabaseHandler(this);
 
 
         /* ----------- USERS + STAFF DATABASE TEST DATA CREATION + RETRIEVAL TESTING ----------- */
 
 
 //        // adding test users to database
-//        User u1 = new User("jsmith@gmail.com", "abc123", "3302 Yellow Rd, New York, NY, 10330", "2287349059230087", 200, "11/17/20 - Cheeseburger, Salad, Gyros");
-//        User u2 = new User("loganb22@gmail.com", "loganb123", "441 State St, Boston, MA, 33409", "7763409867113643", 80, "10/22/20 - Beef and Broccoli Stir-Fry, Salad");
-//        User u3 = new User("sashayarns@yahoo.com", "kittengirl!", "97431 Bluebird Ln, Austin, TX, 55609", "1103448967204789", 0, "");
-//
-//        databaseHandler.addUser(u1);
-//        databaseHandler.addUser(u2);
-//        databaseHandler.addUser(u3);
+        User u1 = new User("jsmith@gmail.com", "abc123", "3302 Yellow Rd, New York, NY, 10330", "2287349059230087", 200, "11/17/20 - Cheeseburger, Salad, Gyros");
+        User u2 = new User("loganb22@gmail.com", "loganb123", "441 State St, Boston, MA, 33409", "7763409867113643", 80, "10/22/20 - Beef and Broccoli Stir-Fry, Salad");
+        User u3 = new User("sashayarns@yahoo.com", "kittengirl!", "97431 Bluebird Ln, Austin, TX, 55609", "1103448967204789", 0, "");
+
+        databaseHandler.addUser(u1);
+        databaseHandler.addUser(u2);
+        databaseHandler.addUser(u3);
 //
 //        // fetching user data test
 //        User temp = databaseHandler.loadUser("jsmith@gmail.com", "abc123");
 //        Log.d("LOGINACTIVITY", "onCreate: " + temp.getDeliveryAddress());
 //
-//        // adding test staff members to database
-//        StaffMember s1 = new StaffMember(1111, "abc123");
-//        StaffMember s2 = new StaffMember(1112, "funny01");
-//        StaffMember s3 = new StaffMember(1113, "johnnyb101");
-//
-//        databaseHandler.addStaff(s1);
-//        databaseHandler.addStaff(s2);
-//        databaseHandler.addStaff(s3);
+        // adding test staff members to database
+        StaffMember s1 = new StaffMember(1111, "abc123");
+        StaffMember s2 = new StaffMember(1112, "funny01");
+        StaffMember s3 = new StaffMember(1113, "johnnyb101");
+
+        databaseHandler.addStaff(s1);
+        databaseHandler.addStaff(s2);
+        databaseHandler.addStaff(s3);
 //
 //        // fetching staff data test
 //        StaffMember tempStaff = databaseHandler.loadStaff(1111, "abc123");
